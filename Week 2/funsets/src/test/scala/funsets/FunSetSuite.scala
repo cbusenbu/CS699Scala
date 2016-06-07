@@ -77,6 +77,13 @@ class FunSetSuite extends FunSuite {
     val s1 = singletonSet(1)
     val s2 = singletonSet(2)
     val s3 = singletonSet(3)
+    val s = union(s1,s2)
+    val t = union(s2,s3)
+    val st = union(s,t)
+    val x = intersect(s,t)
+    val d = diff(t,x)
+    val f = filter(union(s,t),(x:Int)=> (x%3)==0)
+    val m = map(st, (x:Int)=> 2*x)
   }
 
   /**
@@ -98,17 +105,53 @@ class FunSetSuite extends FunSuite {
        * the test fails. This helps identifying which assertion failed.
        */
       assert(contains(s1, 1), "Singleton")
+      assert(contains(s2,2), "Singleton 2")
+      assert(contains(s3,3), "Singleton 3")
     }
   }
 
   test("union contains all elements of each set") {
     new TestSets {
-      val s = union(s1, s2)
-      assert(contains(s, 1), "Union 1")
-      assert(contains(s, 2), "Union 2")
-      assert(!contains(s, 3), "Union 3")
+      assert(contains(s, 1), "Union 1- Success is True")
+      assert(contains(s, 2), "Union 2- Sucess is True")
+      assert(!contains(s, 3), "Union 3- Fail is True")
     }
   }
-
-
+  test("intersect contains only elements shared"){
+    new TestSets{
+      assert(contains(x,2), "Intersect 2- Success is True")
+      assert(!contains(x,1), "Intersect 1 - Fail is True")
+    }
+  }
+  test("difference contains elements not shared"){
+    new TestSets{
+      assert(contains(d,3), "Difference 3 - success is True")
+      assert(!contains(d,2), "Difference 2 - Fail is True")
+    }
+  }
+  test("filter returns the subset for which p holds"){
+    new TestSets{
+      assert(contains(f,3), "filtered by modulus of three - success is True")
+      assert(!contains(f,2), "filtered by modulus of three - Fail is False")
+    }
+  }
+  test("forall test returns true if all bounded integers within s satisfy p"){
+    new TestSets{
+      assert(forall(st,(x:Int) => x%1 == 0),"forall test - success is True")
+      assert(!forall(st,(x:Int) => x%3 == 0), "forall test - Fail is true")
+    }
+  }
+  test("exists test returns true if there exists one integer within s to satify p"){
+    new TestSets{
+      assert(exists(st,(x:Int)=> x%3 ==0), "exists test - success is True")
+      assert(exists(st,(x:Int)=> x%1 ==0), "exists test - success is True")
+      assert(!exists(st,(x:Int)=> x%4 == 0), "exists test - fail is true")
+    }
+  }
+  test("map test returns a set that has been transformed  by applying f to each element in s"){
+    new TestSets{
+      assert(contains(m,6), "map test- success is true")
+      assert(!contains(m,1), "map test - fail is true")
+    }
+  }
 }
